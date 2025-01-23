@@ -20,9 +20,19 @@
             var screenWidth = displayInfo.Width / displayInfo.Density;
             var screenHeight = displayInfo.Height / displayInfo.Density;
 
-            // Set the window size to 1/3 of the screen width and 2/3 of the screen height
-            window.Width = screenWidth / 4;
-            window.Height = (screenHeight * 2) / 3;
+            // This could be a mess on different screen sizes, to be reviewed
+            int width = 360;
+            if (width > screenWidth)
+            {
+                width = (int)(screenWidth - 20);
+            }
+            int height = 760;
+            if (height > screenHeight)
+            {
+                height = (int)(screenHeight - 20);
+            }
+            window.Width = width;
+            window.Height = height;
 
             return window;
         }

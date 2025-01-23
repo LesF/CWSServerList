@@ -12,7 +12,7 @@ namespace CWSServerList.ViewModels
     {
         private readonly DataService _dataService;
 
-        public ObservableCollection<EnvironmentGroup> _serverGroups { get; set; }
+        private ObservableCollection<EnvironmentGroup> _serverGroups;
 
         public ObservableCollection<EnvironmentGroup> ServerGroups
         {
@@ -34,9 +34,9 @@ namespace CWSServerList.ViewModels
         {
         }
 
-        private async void LoadData()
+        public async void LoadData()
         {
-            _serverGroups = new ObservableCollection<EnvironmentGroup>();
+            Console.WriteLine("LoadData: Starting data load");
             var groupedData = new List<EnvironmentGroup>();
             try
             {
@@ -61,10 +61,12 @@ namespace CWSServerList.ViewModels
 
             try
             {
+                ServerGroups.Clear();
                 foreach (var group in groupedData)
                 {
-                    _serverGroups.Add(group);
+                    ServerGroups.Add(group);
                 }
+                Console.WriteLine("LoadData: Data loaded successfully");
             }
             catch (System.Exception ex)
             {
@@ -84,7 +86,6 @@ namespace CWSServerList.ViewModels
 
     public class EnvironmentGroup : ObservableCollection<Cwsserver>
     {
-        // Group heading name
         public string EnvironmentName { get; private set; }
 
         public EnvironmentGroup(string environmentName, List<Cwsserver> servers) : base(servers)

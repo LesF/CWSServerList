@@ -62,8 +62,4 @@
 		<PackageReference Include="Microsoft.Maui.Essentials" Version="8.0.100" />
 	</ItemGroup>
 
-	<ItemGroup>
-	  <Folder Include="ViewModels\" />
-	</ItemGroup>
-
 </Project>

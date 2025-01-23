@@ -11,16 +11,27 @@ namespace CWSServerList.Pages
 {
     public partial class MainPage : ContentPage
     {
+        private MainPageViewModel? _mainPageViewModel;
 
         public MainPage()
         {
             InitializeComponent();
-            var mainPageViewModel = App.Services?.GetRequiredService<MainPageViewModel>();
-            Console.WriteLine("Groups: {0}", mainPageViewModel?.ServerGroups.Count);
+            _mainPageViewModel = App.Services?.GetRequiredService<MainPageViewModel>();
+            Console.WriteLine("Groups: {0}", _mainPageViewModel?.ServerGroups.Count);
 
-            BindingContext = mainPageViewModel;
+            BindingContext = _mainPageViewModel;
 
             Console.WriteLine("MainPage constructor");
+        }
+
+        protected override void OnAppearing()
+        {
+            base.OnAppearing();
+            if (_mainPageViewModel != null)
+            {
+                Console.WriteLine("OnAppearing: Calling LoadData");
+                _mainPageViewModel.LoadData();
+            }
         }
 
         private async void OnBrowseTapped(object sender, EventArgs e)

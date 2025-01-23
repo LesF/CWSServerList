@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="CWSServerList.Pages.LogsPage">
+             x:Class="CWSServerList.Pages.LogsPage"
+             xmlns:local="clr-namespace:CWSServerList.ViewModels">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25">
-            <Label
-                Text="Logs"
-                Style="{StaticResource Headline}"
-                SemanticProperties.HeadingLevel="Level1" />
-            <!-- Add your logs content here -->
-        </VerticalStackLayout>
-    </ScrollView>
+    <ContentPage.BindingContext>
+        <local:LogsPageViewModel />
+    </ContentPage.BindingContext>
+
+    <VerticalStackLayout Padding="10">
+        <HorizontalStackLayout Spacing="10">
+            <Label Text="Environment:" VerticalOptions="Center" />
+            <RadioButton Content="Production" GroupName="Environment" IsChecked="{Binding SelectedEnvironment, Converter={StaticResource EnvironmentToBoolConverter}, ConverterParameter=P}" />
+            <RadioButton Content="Test" GroupName="Environment" IsChecked="{Binding SelectedEnvironment, Converter={StaticResource EnvironmentToBoolConverter}, ConverterParameter=T}" />
+        </HorizontalStackLayout>
+
+        <CollectionView ItemsSource="{Binding LogGroups}" IsGrouped="True">
+            <CollectionView.GroupHeaderTemplate>
+                <DataTemplate>
+                    <StackLayout BackgroundColor="LightGray" Padding="5">
+                        <Label Text="{Binding ServerName}" FontAttributes="Bold" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.GroupHeaderTemplate>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout Padding="10">
+                        <Label Text="{Binding FileName}" />
+                        <Label Text="{Binding Size, StringFormat='Size: {0:N0} bytes'}" />
+                        <Label Text="{Binding LastUpdated, StringFormat='Last Updated: {0:G}'}" TextColor="{Binding LastUpdated, Converter={StaticResource LastUpdatedToColorConverter}}" />
+                    </StackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
 
 </ContentPage>

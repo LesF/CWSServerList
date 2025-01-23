@@ -30,4 +30,14 @@ public class DataService
         }
     }
 
+    public async Task<List<Cwsserver>> GetServersByEnvironmentAsync(string environmentCode)
+    {
+        using (var scope = _serviceProvider.CreateScope())
+        {
+            var context = scope.ServiceProvider.GetRequiredService<ClinicalIntranetAlphaContext>();
+            return await context.Cwsservers
+                .Where(s => s.EnvironmentCode == environmentCode && s.IsActive)
+                .ToListAsync();
+        }
+    }
 }

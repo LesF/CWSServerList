@@ -10,7 +10,8 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:BoolToExpandCollapseConverter x:Key="BoolToExpandCollapseConverter" />
+            <converters:LastUpdatedToColorConverter x:Key="LastUpdatedToColorConverter" />
+            <converters:EnvironmentToBoolConverter x:Key="EnvironmentToBoolConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

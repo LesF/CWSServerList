@@ -39,7 +39,7 @@
                                     <TapGestureRecognizer Tapped="OnRdpTapped" CommandParameter="{Binding .}" />
                                 </Image.GestureRecognizers>
                             </Image>
-                            <Image Source="folder_open.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center">
+                            <Image Source="folder_open.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" Margin="0,0,20,0">
                                 <Image.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnLogsTapped" CommandParameter="{Binding .}" />
                                 </Image.GestureRecognizers>
