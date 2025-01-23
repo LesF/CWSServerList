@@ -21,7 +21,7 @@
             var screenHeight = displayInfo.Height / displayInfo.Density;
 
             // Set the window size to 1/3 of the screen width and 2/3 of the screen height
-            window.Width = screenWidth / 3;
+            window.Width = screenWidth / 4;
             window.Height = (screenHeight * 2) / 3;
 
             return window;

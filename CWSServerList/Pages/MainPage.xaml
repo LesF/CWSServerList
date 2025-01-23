@@ -26,7 +26,6 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Label Text="{Binding ServerName}" Grid.Column="0" />
                         <StackLayout Orientation="Horizontal" Grid.Column="1" Spacing="10">
@@ -46,7 +45,6 @@
                                 </Image.GestureRecognizers>
                             </Image>
                         </StackLayout>
-                        <Label Text="{Binding Comment}" VerticalOptions="Center" Margin="10,0,0,0" Grid.Column="2" />
                     </Grid>
                 </ViewCell>
             </DataTemplate>

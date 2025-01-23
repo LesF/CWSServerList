@@ -5,6 +5,7 @@ using CWSServerList.ViewModels;
 using Microsoft.Maui;
 using Microsoft.Maui.Controls;
 using System.Diagnostics;
+using System.IO;
 
 namespace CWSServerList.Pages
 {
@@ -15,7 +16,7 @@ namespace CWSServerList.Pages
         {
             InitializeComponent();
             var mainPageViewModel = App.Services?.GetRequiredService<MainPageViewModel>();
-            Console.WriteLine("Groups: {0}", mainPageViewModel.ServerGroups.Count);
+            Console.WriteLine("Groups: {0}", mainPageViewModel?.ServerGroups.Count);
 
             BindingContext = mainPageViewModel;
 
@@ -72,16 +73,41 @@ namespace CWSServerList.Pages
             {
                 // Handle the Logs action
                 Console.WriteLine($"Logs tapped for server: {server.ServerName}");
-                // Add your logic here
+
+                string logPath = $@"\\{server.ServerName}\CWSLogs";
+
+                try
+                {
+                    // Check if user has access to the path
+                    if (Directory.Exists(logPath))
+                    {
+                        Console.WriteLine($"Logs path exists: {logPath}");
+
+                        // Check user permissions on the files
+                        var files = Directory.GetFiles(logPath);
+
+                        // Open the path in the default file explorer
+                        Process.Start(new ProcessStartInfo
+                        {
+                            FileName = logPath,
+                            UseShellExecute = true
+                        });
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Logs path does not exist: {logPath}");
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    Console.WriteLine($"Access denied to path: {logPath}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to open logs path: {ex.Message}");
+                }
             }
         }
     }
 
-    /* To display the full URL:
-     * <Label Text="{Binding Cwsurl}" VerticalOptions="Center" IsVisible="{Binding Cwsurl, Converter={StaticResource Key=StringToVisibilityConverter}}" Margin="10,0,0,0" Grid.Column="2" />
-     * Removed this, will have an icon instead, and dsplay Notes in the third column
-     * 
-     * Removed inactive servers from the data source so this is not needed:
-     * <Image Source="{Binding IsActive, Converter={StaticResource BoolToImageConverter}}" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" Margin="10,0,0,0" Grid.Column="1" Visual="Default" />
-     */
 }
