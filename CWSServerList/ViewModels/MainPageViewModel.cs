@@ -51,7 +51,7 @@ namespace CWSServerList.ViewModels
                 groupedData = environments.Select(env =>
                     new EnvironmentGroup(
                         env.Environment,
-                        servers.Where(s => s.EnvironmentCode == env.EnvironmentCode).ToList())).ToList();
+                        servers.Where(s => s.EnvironmentCode == env.EnvironmentCode && s.IsActive).ToList())).ToList();
             }
             catch (System.Exception ex)
             {
@@ -84,6 +84,7 @@ namespace CWSServerList.ViewModels
 
     public class EnvironmentGroup : ObservableCollection<Cwsserver>
     {
+        // Group heading name
         public string EnvironmentName { get; private set; }
 
         public EnvironmentGroup(string environmentName, List<Cwsserver> servers) : base(servers)

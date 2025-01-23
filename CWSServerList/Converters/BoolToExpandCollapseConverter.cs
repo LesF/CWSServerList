@@ -1,18 +1,18 @@
-using Microsoft.Maui.Controls;
+﻿using Microsoft.Maui.Controls;
 using System;
 using System.Globalization;
 
 namespace CWSServerList.Converters
 {
-    public class BoolToImageConverter : IValueConverter
+    public class BoolToExpandCollapseConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is bool isActive)
+            if (value is bool isExpanded)
             {
-                return isActive ? "green_tick.png" : "red_cross.png";
+                return isExpanded ? "▼" : "►"; // Use appropriate symbols or text for expand/collapse
             }
-            return "warning.png";
+            return "►";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -21,4 +21,3 @@ namespace CWSServerList.Converters
         }
     }
 }
-

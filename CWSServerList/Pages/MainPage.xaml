@@ -9,7 +9,7 @@
         <local:MainPageViewModel />
     </ContentPage.BindingContext>
 
-    <ListView ItemsSource="{Binding ServerGroups}" IsGroupingEnabled="True" GroupDisplayBinding="{Binding EnvironmentName}">
+    <ListView ItemsSource="{Binding ServerGroups}" IsGroupingEnabled="True" GroupDisplayBinding="{Binding EnvironmentName}" HasUnevenRows="False">
         <ListView.GroupHeaderTemplate>
             <DataTemplate>
                 <ViewCell>
@@ -22,15 +22,31 @@
         <ListView.ItemTemplate>
             <DataTemplate>
                 <ViewCell>
-                    <Grid Padding="2" IsEnabled="False">
+                    <Grid Padding="2">
                         <Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="40" />
-							<ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Label Text="{Binding ServerName}" Grid.Column="0" />
-                        <Image Source="{Binding IsActive, Converter={StaticResource Key=BoolToImageConverter}}" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" Margin="10,0,0,0" Grid.Column="1" />
-                        <Label Text="{Binding Cwsurl}" VerticalOptions="Center" IsVisible="{Binding Cwsurl, Converter={StaticResource Key=StringToVisibilityConverter}}" Margin="10,0,0,0" Grid.Column="2" />
+                        <StackLayout Orientation="Horizontal" Grid.Column="1" Spacing="10">
+                            <Image Source="application.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnBrowseTapped" CommandParameter="{Binding .}" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Image Source="monitor.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnRdpTapped" CommandParameter="{Binding .}" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                            <Image Source="folder_open.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnLogsTapped" CommandParameter="{Binding .}" />
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </StackLayout>
+                        <Label Text="{Binding Comment}" VerticalOptions="Center" Margin="10,0,0,0" Grid.Column="2" />
                     </Grid>
                 </ViewCell>
             </DataTemplate>
