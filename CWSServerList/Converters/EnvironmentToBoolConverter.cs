@@ -21,7 +21,7 @@ namespace CWSServerList.Converters
             {
                 return targetEnvironment;
             }
-            return null;
+            return Binding.DoNothing;
         }
     }
 }

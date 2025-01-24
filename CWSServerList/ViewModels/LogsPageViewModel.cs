@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using CWSServerList.Models;
 using Microsoft.Maui.Controls;
+using Microsoft.Maui.ApplicationModel;
 
 namespace CWSServerList.ViewModels
 {
@@ -16,7 +17,7 @@ namespace CWSServerList.ViewModels
         private readonly DataService _dataService;
         private readonly System.Timers.Timer _refreshTimer;
         private ObservableCollection<ServerLogGroup> _logGroups;
-        private string _selectedEnvironment;
+        private string _selectedEnvironment = "P";
 
         public ObservableCollection<ServerLogGroup> LogGroups
         {
@@ -33,11 +34,16 @@ namespace CWSServerList.ViewModels
             get => _selectedEnvironment;
             set
             {
-                _selectedEnvironment = value;
-                OnPropertyChanged();
-                RefreshLogsAsync();
+                if (_selectedEnvironment != value)
+                {
+                    _selectedEnvironment = value;
+                    OnPropertyChanged(nameof(SelectedEnvironment));
+                    RefreshLogsAsync().ConfigureAwait(false);
+                }
             }
         }
+
+        public Command<LogFile> OpenLogCommand { get; }
 
         public LogsPageViewModel(DataService dataService)
         {
@@ -47,6 +53,10 @@ namespace CWSServerList.ViewModels
             _refreshTimer = new System.Timers.Timer(30000); // 30 seconds
             _refreshTimer.Elapsed += async (sender, e) => await RefreshLogsAsync();
             _refreshTimer.Start();
+
+            OpenLogCommand = new Command<LogFile>(async (log) => await ExecuteOpenLogCommand(log));
+
+            SelectedEnvironment = "P"; // This will trigger RefreshLogsAsync
         }
 
         public LogsPageViewModel() : this(App.Services.GetRequiredService<DataService>())
@@ -56,38 +66,68 @@ namespace CWSServerList.ViewModels
         public async Task RefreshLogsAsync()
         {
             // Poll the log directories and update the LogGroups collection
-            var servers = await _dataService.GetServersByEnvironmentAsync(_selectedEnvironment);
-            var logGroups = new ObservableCollection<ServerLogGroup>();
-
-            foreach (var server in servers)
+            try
             {
-                var logPath = $@"\\{server.ServerName}\CWSLogs";
-                if (Directory.Exists(logPath))
+                var servers = await _dataService.GetServersByEnvironmentAsync(_selectedEnvironment);
+                var logGroups = new ObservableCollection<ServerLogGroup>();
+
+                foreach (var server in servers)
                 {
-                    var logFiles = Directory.GetFiles(logPath, "*.log", SearchOption.TopDirectoryOnly)
-                        .Select(file => new LogFile
-                        {
-                            FileName = Path.GetFileName(file),
-                            Size = new FileInfo(file).Length,
-                            LastUpdated = File.GetLastWriteTime(file)
-                        })
-                        .ToList();
+                    var logPath = $@"\\{server.ServerName}\CWSLogs";
+                    if (Directory.Exists(logPath))
+                    {
+                        var logFiles = Directory.GetFiles(logPath, "*.log", SearchOption.TopDirectoryOnly)
+                            .Select(file => new LogFile
+                            {
+                                FileName = Path.GetFileName(file),
+                                Size = new FileInfo(file).Length,
+                                LastUpdated = File.GetLastWriteTime(file),
+                                DirectoryPath = logPath
+                            })
+                            .ToList();
 
-                    logGroups.Add(new ServerLogGroup(server.ServerName, logFiles));
+                        logGroups.Add(new ServerLogGroup(server.ServerName, logFiles));
+                    }
                 }
-            }
 
-            LogGroups = logGroups;
+                LogGroups = logGroups;
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions (e.g., log error, notify user)
+                Console.WriteLine($"Error refreshing logs: {ex.Message}");
+            }
         }
 
         public void StartAutoRefresh()
         {
             _refreshTimer.Start();
+            RefreshLogsAsync().ConfigureAwait(false);
         }
 
         public void StopAutoRefresh()
         {
             _refreshTimer.Stop();
+        }
+
+        private async Task ExecuteOpenLogCommand(LogFile log)
+        {
+            if (log != null)
+            {
+                try
+                {
+                    string networkPath = Path.Combine(log.DirectoryPath, log.FileName);
+                    var uri = new Uri(networkPath);
+
+                    // Open the log file with the default viewer
+                    await Launcher.OpenAsync(uri);
+                }
+                catch (Exception ex)
+                {
+                    // Display an alert to the user
+                    await Application.Current.MainPage.DisplayAlert("Error", $"Unable to open log file: {ex.Message}", "OK");
+                }
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -111,6 +151,7 @@ namespace CWSServerList.ViewModels
     public class LogFile
     {
         public string FileName { get; set; }
+        public string DirectoryPath { get; set; }
         public long Size { get; set; }
         public DateTime LastUpdated { get; set; }
     }

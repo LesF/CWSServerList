@@ -8,31 +8,61 @@
         <local:LogsPageViewModel />
     </ContentPage.BindingContext>
 
-    <VerticalStackLayout Padding="10">
-        <HorizontalStackLayout Spacing="10">
+    <Grid Padding="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <HorizontalStackLayout Grid.Row="0" Spacing="10">
             <Label Text="Environment:" VerticalOptions="Center" />
-            <RadioButton Content="Production" GroupName="Environment" IsChecked="{Binding SelectedEnvironment, Converter={StaticResource EnvironmentToBoolConverter}, ConverterParameter=P}" />
-            <RadioButton Content="Test" GroupName="Environment" IsChecked="{Binding SelectedEnvironment, Converter={StaticResource EnvironmentToBoolConverter}, ConverterParameter=T}" />
+            <RadioButton Content="Production" 
+                         GroupName="Environment" 
+                         IsChecked="{Binding SelectedEnvironment, 
+                                     Converter={StaticResource EnvironmentToBoolConverter}, 
+                                     ConverterParameter=P, 
+                                     Mode=TwoWay}"
+                         CheckedChanged="RadioButton_CheckedChanged" />
+            <RadioButton Content="Test" 
+                         GroupName="Environment" 
+                         IsChecked="{Binding SelectedEnvironment, 
+                                     Converter={StaticResource EnvironmentToBoolConverter}, 
+                                     ConverterParameter=T, 
+                                     Mode=TwoWay}"
+                         CheckedChanged="RadioButton_CheckedChanged" />
         </HorizontalStackLayout>
 
-        <CollectionView ItemsSource="{Binding LogGroups}" IsGrouped="True">
+        <CollectionView x:Name="LogsCollectionView"
+                        Grid.Row="1" 
+                        ItemsSource="{Binding LogGroups}" 
+                        IsGrouped="True"
+                        SelectionMode="Single"
+                        SelectionChangedCommand="{Binding OpenLogCommand}"
+                        SelectionChangedCommandParameter="{Binding Source={x:Reference LogsCollectionView}, Path=SelectedItem}"
+                        SelectionChanged="CollectionView_SelectionChanged">
             <CollectionView.GroupHeaderTemplate>
                 <DataTemplate>
-                    <StackLayout BackgroundColor="LightGray" Padding="5">
+                    <StackLayout BackgroundColor="Navy" Padding="2">
                         <Label Text="{Binding ServerName}" FontAttributes="Bold" />
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.GroupHeaderTemplate>
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <StackLayout Padding="10">
-                        <Label Text="{Binding FileName}" />
-                        <Label Text="{Binding Size, StringFormat='Size: {0:N0} bytes'}" />
-                        <Label Text="{Binding LastUpdated, StringFormat='Last Updated: {0:G}'}" TextColor="{Binding LastUpdated, Converter={StaticResource LastUpdatedToColorConverter}}" />
-                    </StackLayout>
+                    <Grid Padding="2" ColumnDefinitions="*,Auto,Auto">
+                        <Label Text="{Binding FileName}" Grid.Column="0" VerticalOptions="Center" />
+                        <Label Text="{Binding Size, StringFormat='{0:N0} bytes'}" 
+                               Grid.Column="1" 
+                               VerticalOptions="Center" />
+                        <Label Text="{Binding LastUpdated, StringFormat='{0:HH\\:mm}'}"
+                               TextColor="{Binding LastUpdated, Converter={StaticResource LastUpdatedToColorConverter}}"
+                               Grid.Column="2" 
+                               VerticalOptions="Center" 
+                               Margin="5,0,15,0" />
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+    </Grid>
 
 </ContentPage>
