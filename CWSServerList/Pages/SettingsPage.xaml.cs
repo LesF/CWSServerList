@@ -3,6 +3,7 @@ using System;
 using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using System.Text.RegularExpressions;
 
 namespace CWSServerList.Pages
 {
@@ -14,62 +15,39 @@ namespace CWSServerList.Pages
         {
             InitializeComponent();
             // Get the ConnectionStringService from the service provider
-            _connectionStringService = App.Services.GetRequiredService<ConnectionStringService>();
+            _connectionStringService = App.Services?.GetRequiredService<ConnectionStringService>() ?? throw new InvalidOperationException("App.Services is not initialized.");
 
             // Load settings
-            DatabaseServerName.Text = Preferences.Get("DatabaseServer", string.Empty);
-            DatabaseNameEntry.Text = Preferences.Get("DatabaseName", string.Empty);
-            UserEntry.Text = Preferences.Get("User", string.Empty);
-            PasswordEntry.Text = Preferences.Get("Password", string.Empty);
+            ActivationKeyEntry.Text = Preferences.Get("ActivationKey", string.Empty);
         }
 
         private async void OnSaveClicked(object sender, EventArgs e)
         {
-            // Validate inputs
-            if (string.IsNullOrWhiteSpace(DatabaseServerName.Text))
+            // Remove all whitespace (spaces, tabs, newlines, etc.) that may have been included if user pasted the value into the entry
+            string newKey = Regex.Replace(ActivationKeyEntry.Text ?? string.Empty, @"\s+", "");
+            if (string.IsNullOrEmpty(newKey))
             {
-                await DisplayAlert("Validation Error", "Database Server Name is required.", "OK");
+                await DisplayAlert("Validation Error", "Activation Key is required", "OK");
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(DatabaseNameEntry.Text))
+            string connectionString = _connectionStringService.DecryptDBKey(newKey) ?? string.Empty;
+            if (string.IsNullOrEmpty(connectionString))
             {
-                await DisplayAlert("Validation Error", "Database Name is required.", "OK");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(UserEntry.Text))
-            {
-                await DisplayAlert("Validation Error", "User is required.", "OK");
-                return;
-            }
-
-            if (string.IsNullOrWhiteSpace(PasswordEntry.Text))
-            {
-                await DisplayAlert("Validation Error", "Password is required.", "OK");
-                return;
-            }
-
-            // Create connection string
-            var connectionString = $"Server={DatabaseServerName.Text};Database={DatabaseNameEntry.Text};User Id={UserEntry.Text};Password={PasswordEntry.Text};TrustServerCertificate=True;";
-
-            // Test the database connection
-            if (await TestDatabaseConnectionAsync(connectionString))
-            {
-                // Save the settings securely
-                Preferences.Set("DatabaseServer", DatabaseServerName.Text);
-                Preferences.Set("DatabaseName", DatabaseNameEntry.Text);
-                Preferences.Set("User", UserEntry.Text);
-                Preferences.Set("Password", PasswordEntry.Text);
-
-                // Update the connection string in the service
-                _connectionStringService.UpdateConnectionString(DatabaseServerName.Text, DatabaseNameEntry.Text, UserEntry.Text, PasswordEntry.Text);
-
-                await DisplayAlert("Settings", "Settings saved successfully", "OK");
+                await DisplayAlert("Validation Error", "Invalid Activation Key", "OK");
             }
             else
             {
-                await DisplayAlert("Connection Error", "Failed to connect to the database. Please check your settings.", "OK");
+                // Test the database connection
+                if (await TestDatabaseConnectionAsync(connectionString))
+                {
+                    Preferences.Set("ActivationKey", newKey);
+                    await DisplayAlert("Settings", "Settings saved successfully", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Connection Error", "Failed to connect to the database. Please check your settings.", "OK");
+                }
             }
         }
 
@@ -89,5 +67,6 @@ namespace CWSServerList.Pages
                 return false;
             }
         }
+
     }
 }

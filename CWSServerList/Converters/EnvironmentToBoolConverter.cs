@@ -6,7 +6,7 @@ namespace CWSServerList.Converters
 {
     public class EnvironmentToBoolConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is string environment && parameter is string targetEnvironment)
             {
@@ -15,7 +15,7 @@ namespace CWSServerList.Converters
             return false;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             if (value is bool isChecked && isChecked && parameter is string targetEnvironment)
             {

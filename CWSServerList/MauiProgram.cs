@@ -21,8 +21,6 @@ namespace CWSServerList
                 });
 
             // Register ConnectionStringService
-            // On first run, the settings tab will be displayed, allowing the user to enter database connection information
-            // On subsequent runs, the connection string will be read from the settings file
             builder.Services.AddSingleton<ConnectionStringService>();
 
             // Add DbContext
@@ -42,8 +40,43 @@ namespace CWSServerList
             builder.Logging.AddDebug();
 #endif
 
-            return builder.Build();
+            var app = builder.Build();
+
+            // Check for command line argument key=xxx and generate a new ActivationKey value
+            var args = Environment.GetCommandLineArgs();
+            foreach (var arg in args)
+            {
+                if (arg.StartsWith("key="))
+                {
+                    var value = arg.Substring("key=".Length);
+                    if (!string.IsNullOrEmpty(value))
+                    {
+                        GenerateNewKey(value, app.Services);
+                    }
+                }
+            }
+
+            return app;
+        }
+
+        // Process command-line value for generating a new ActivationKey
+        // Expected format: key=server;database;user;password
+        // The new ActivationKey will be stored to user's app preferences.  This key can be
+        // shared with users, who can paste it into their settings to activate database access.
+        private static void GenerateNewKey(string value, IServiceProvider services)
+        {
+            var connectionStringService = services.GetRequiredService<ConnectionStringService>();
+            string[] dbParams = value.Split(';');
+            if (dbParams.Length > 3)
+            {
+                string newKey = connectionStringService.EncryptDBKey(dbParams[0], dbParams[1], dbParams[2], dbParams[3]);
+                if (!string.IsNullOrEmpty(newKey))
+                {
+                    Preferences.Set("ActivationKey", newKey);
+                    // and refresh the connection string
+                    connectionStringService.GetConnectionString();
+                }
+            }
         }
     }
-
 }

@@ -59,7 +59,9 @@ namespace CWSServerList.ViewModels
             SelectedEnvironment = "P"; // This will trigger RefreshLogsAsync
         }
 
-        public LogsPageViewModel() : this(App.Services.GetRequiredService<DataService>())
+        public LogsPageViewModel() : this(
+            App.Services?.GetRequiredService<DataService>()
+                ?? throw new InvalidOperationException("App.Services is not initialized."))
         {
         }
 
@@ -125,14 +127,22 @@ namespace CWSServerList.ViewModels
                 catch (Exception ex)
                 {
                     // Display an alert to the user
-                    await Application.Current.MainPage.DisplayAlert("Error", $"Unable to open log file: {ex.Message}", "OK");
+                    if (Application.Current?.MainPage != null)
+                    {
+                        await Application.Current.MainPage.DisplayAlert("Error", $"Unable to open log file: {ex.Message}", "OK");
+                    }
+                    else
+                    {
+                        // Fallback: log to console or handle as appropriate
+                        Console.WriteLine($"Unable to open log file: {ex.Message}");
+                    }
                 }
             }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
@@ -150,8 +160,8 @@ namespace CWSServerList.ViewModels
 
     public class LogFile
     {
-        public string FileName { get; set; }
-        public string DirectoryPath { get; set; }
+        public string FileName { get; set; } = "";
+        public string DirectoryPath { get; set; } = "";
         public long Size { get; set; }
         public DateTime LastUpdated { get; set; }
     }

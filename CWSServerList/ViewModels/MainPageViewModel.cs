@@ -30,7 +30,9 @@ namespace CWSServerList.ViewModels
             _serverGroups = new ObservableCollection<EnvironmentGroup>();
             LoadData();
         }
-        public MainPageViewModel() : this(App.Services.GetRequiredService<DataService>())
+        public MainPageViewModel() : this(
+            App.Services?.GetRequiredService<DataService>() 
+                ?? throw new InvalidOperationException("App.Services is not initialized."))
         {
         }
 
@@ -78,7 +80,7 @@ namespace CWSServerList.ViewModels
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
