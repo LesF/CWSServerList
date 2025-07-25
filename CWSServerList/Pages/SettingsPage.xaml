@@ -6,10 +6,25 @@
     <VerticalStackLayout Padding="30,0" Spacing="25">
         <Label Text="Database Settings" Style="{StaticResource Headline}" />
 
-        <Entry x:Name="DatabaseServerName" Placeholder="Server Name" />
-        <Entry x:Name="DatabaseNameEntry" Placeholder="Database Name" />
-        <Entry x:Name="UserEntry" Placeholder="User" />
-        <Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" />
+        <VerticalStackLayout Spacing="4">
+            <Label Text="Server Name" />
+            <Entry x:Name="DatabaseServerName" Placeholder="Server Name" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Spacing="4">
+            <Label Text="Database" />
+            <Entry x:Name="DatabaseNameEntry" Placeholder="Database Name" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Spacing="4">
+            <Label Text="User" />
+            <Entry x:Name="UserEntry" Placeholder="User" />
+        </VerticalStackLayout>
+
+        <VerticalStackLayout Spacing="4">
+            <Label Text="Password" />
+            <Entry x:Name="PasswordEntry" Placeholder="Password" IsPassword="True" />
+        </VerticalStackLayout>
         
         <Button Text="Save" Clicked="OnSaveClicked" />
     </VerticalStackLayout>

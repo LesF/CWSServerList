@@ -5,7 +5,7 @@ namespace CWSServerList.Pages
 {
     public partial class LogsPage : ContentPage
     {
-        private LogsPageViewModel _viewModel;
+        private LogsPageViewModel? _viewModel;
 
         public LogsPage()
         {
@@ -37,7 +37,12 @@ namespace CWSServerList.Pages
                 var viewModel = BindingContext as LogsPageViewModel;
                 if (viewModel != null)
                 {
-                    viewModel.SelectedEnvironment = radioButton.Content.ToString().StartsWith("P") ? "P" : "T";
+                    var content = radioButton.Content?.ToString();
+                    if (!string.IsNullOrEmpty(content))
+                    {
+                        // Update the selected environment based on the radio button content
+                        viewModel.SelectedEnvironment = content.StartsWith("P") ? "P" : "T";
+                    }
                 }
             }
         }
