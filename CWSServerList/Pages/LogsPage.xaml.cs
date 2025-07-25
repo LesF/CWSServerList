@@ -19,8 +19,15 @@ namespace CWSServerList.Pages
             if (_viewModel != null)
             {
                 // Ensure that logs are refreshed when the page appears
-                await _viewModel.RefreshLogsAsync();
-                _viewModel.StartAutoRefresh();
+                _viewModel.IsLoading = true;
+
+                // Defer refresh until after UI is rendered
+                Dispatcher.Dispatch(async () =>
+                {
+                    await Task.Delay(1); // Ensures UI is visible
+                    await _viewModel.RefreshLogsAsync();
+                    _viewModel.StartAutoRefresh();
+                });
             }
         }
 

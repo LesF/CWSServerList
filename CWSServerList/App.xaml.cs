@@ -21,7 +21,8 @@
             var screenHeight = displayInfo.Height / displayInfo.Density;
 
             // This could be a mess on different screen sizes, to be reviewed
-            int width = 360;
+            // Make it wide enough for the average list of log files
+            int width = 440;
             if (width > screenWidth)
             {
                 width = (int)(screenWidth - 20);

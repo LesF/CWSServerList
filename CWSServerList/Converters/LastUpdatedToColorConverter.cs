@@ -10,7 +10,7 @@ namespace CWSServerList.Converters
         {
             if (value is DateTime lastUpdated)
             {
-                return (DateTime.Now - lastUpdated).TotalMinutes <= 5 ? Colors.Blue : Colors.White;
+                return (DateTime.Now - lastUpdated).TotalMinutes <= 5 ? Colors.Cyan : Colors.White;
             }
             return Colors.Black;
         }

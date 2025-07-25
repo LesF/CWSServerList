@@ -8,32 +8,30 @@
         <local:LogsPageViewModel />
     </ContentPage.BindingContext>
 
-    <Grid Padding="10">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <Grid Padding="10" Grid.RowDefinitions="Auto,Auto,*">
 
-        <HorizontalStackLayout Grid.Row="0" Spacing="10">
+        <ActivityIndicator IsRunning="{Binding IsLoading}" IsVisible="{Binding IsLoading}" Grid.Row="0" />
+
+        <HorizontalStackLayout Grid.Row="1" Spacing="10">
             <Label Text="Environment:" VerticalOptions="Center" />
             <RadioButton Content="Production" 
-                         GroupName="Environment" 
-                         IsChecked="{Binding SelectedEnvironment, 
-                                     Converter={StaticResource EnvironmentToBoolConverter}, 
-                                     ConverterParameter=P, 
-                                     Mode=TwoWay}"
-                         CheckedChanged="RadioButton_CheckedChanged" />
+                            GroupName="Environment" 
+                            IsChecked="{Binding SelectedEnvironment, 
+                                        Converter={StaticResource EnvironmentToBoolConverter}, 
+                                        ConverterParameter=P, 
+                                        Mode=TwoWay}"
+                            CheckedChanged="RadioButton_CheckedChanged" />
             <RadioButton Content="Test" 
-                         GroupName="Environment" 
-                         IsChecked="{Binding SelectedEnvironment, 
-                                     Converter={StaticResource EnvironmentToBoolConverter}, 
-                                     ConverterParameter=T, 
-                                     Mode=TwoWay}"
-                         CheckedChanged="RadioButton_CheckedChanged" />
+                            GroupName="Environment" 
+                            IsChecked="{Binding SelectedEnvironment, 
+                                        Converter={StaticResource EnvironmentToBoolConverter}, 
+                                        ConverterParameter=T, 
+                                        Mode=TwoWay}"
+                            CheckedChanged="RadioButton_CheckedChanged" />
         </HorizontalStackLayout>
 
         <CollectionView x:Name="LogsCollectionView"
-                        Grid.Row="1" 
+                        Grid.Row="2" 
                         ItemsSource="{Binding LogGroups}" 
                         IsGrouped="True"
                         SelectionMode="Single"
@@ -42,8 +40,8 @@
                         SelectionChanged="CollectionView_SelectionChanged">
             <CollectionView.GroupHeaderTemplate>
                 <DataTemplate>
-                    <StackLayout BackgroundColor="Navy" Padding="2">
-                        <Label Text="{Binding ServerName}" FontAttributes="Bold" />
+                    <StackLayout BackgroundColor="RoyalBlue" Margin="0,10,0,0" Padding="4,0,0,0">
+                        <Label Text="{Binding ServerName}" FontAttributes="Bold" Margin="0" Padding="0" />
                     </StackLayout>
                 </DataTemplate>
             </CollectionView.GroupHeaderTemplate>
@@ -52,13 +50,13 @@
                     <Grid Padding="2" ColumnDefinitions="*,Auto,Auto">
                         <Label Text="{Binding FileName}" Grid.Column="0" VerticalOptions="Center" />
                         <Label Text="{Binding Size, StringFormat='{0:N0} bytes'}" 
-                               Grid.Column="1" 
-                               VerticalOptions="Center" />
+                                Grid.Column="1" 
+                                VerticalOptions="Center" />
                         <Label Text="{Binding LastUpdated, StringFormat='{0:HH\\:mm}'}"
-                               TextColor="{Binding LastUpdated, Converter={StaticResource LastUpdatedToColorConverter}}"
-                               Grid.Column="2" 
-                               VerticalOptions="Center" 
-                               Margin="5,0,15,0" />
+                                TextColor="{Binding LastUpdated, Converter={StaticResource LastUpdatedToColorConverter}}"
+                                Grid.Column="2" 
+                                VerticalOptions="Center" 
+                                Margin="5,0,15,0" />
                     </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

@@ -19,6 +19,14 @@ namespace CWSServerList.ViewModels
         private ObservableCollection<ServerLogGroup> _logGroups;
         private string _selectedEnvironment = "P";
 
+
+        private bool isLoading;
+        public bool IsLoading
+        {
+            get => isLoading;
+            set { isLoading = value; OnPropertyChanged(); }
+        }
+
         public ObservableCollection<ServerLogGroup> LogGroups
         {
             get => _logGroups;
@@ -67,6 +75,7 @@ namespace CWSServerList.ViewModels
 
         public async Task RefreshLogsAsync()
         {
+            IsLoading = true;
             // Poll the log directories and update the LogGroups collection
             try
             {
@@ -99,6 +108,7 @@ namespace CWSServerList.ViewModels
                 // Handle exceptions (e.g., log error, notify user)
                 Console.WriteLine($"Error refreshing logs: {ex.Message}");
             }
+            IsLoading = false;
         }
 
         public void StartAutoRefresh()
