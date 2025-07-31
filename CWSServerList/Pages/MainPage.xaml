@@ -13,8 +13,8 @@
         <ListView.GroupHeaderTemplate>
             <DataTemplate>
                 <ViewCell>
-                    <StackLayout BackgroundColor="RoyalBlue" Margin="10,10,0,0" Padding="4,0,0,0">
-                        <Label Text="{Binding EnvironmentName}" FontAttributes="Bold" Margin="0" Padding="0" />
+                    <StackLayout Margin="10,10,0,0" Padding="4,0,0,0">
+                        <Label Text="{Binding EnvironmentName}" Style="{StaticResource SubHeadline}" FontAttributes="Bold" Margin="0" Padding="0" />
                     </StackLayout>
                 </ViewCell>
             </DataTemplate>
